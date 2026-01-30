@@ -38,35 +38,3 @@ jobs:
         with:
           name: Flix_ff_Dylib
           path: Flix_ff.dylib
-18:27
-name: Compilar Flix_ff iOS
-on: 
-  push:
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup
-        run: |
-          find . -name "Flix_ff.mm" -exec cp {} . \;
-          curl -L "https://raw.githubusercontent.com/theos/sdks/master/iPhoneOS14.5.sdk/usr/include/substrate.h" -o substrate.h
-
-      - name: Compilar
-        run: |
-          clang -dynamiclib -arch arm64 \
-          -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
-          -I. \
-          -o Flix_ff.dylib Flix_ff.mm \
-          -framework Foundation -framework UIKit \
-          -lobjc
-
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: Flix_ff_Dylib
-          path: Flix_ff.dylib
