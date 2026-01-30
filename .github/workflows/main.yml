@@ -1,4 +1,35 @@
-name: Compilar Flix_ff iOS
+[18:22, 1/30/2026] Palominha God: name: Compilar Flix_ff iOS
+on: 
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Localizar e Preparar Script
+        run: |
+          # Procura o arquivo Flix_ff.mm e o move para a raiz, caso esteja em pasta errada
+          find . -name "Flix_ff.mm" -exec cp {} . \;
+          ls -la # Lista os arquivos para confirmar a presença do script
+
+      - name: Compilador Dylib
+        run: |
+          clang -dynamiclib -arch arm64 \
+          -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+          -o Flix_ff.dylib Flix_ff.mm \
+          -framework Foundation -framework UIKit \
+          -lobjc
+
+      - name: Salvar Arquivo Compilado
+        uses: actions/upload-artifact@v4
+        with:
+          name: Flix_ff_Dylib
+          path: Flix_ff.dylib
+[18:24, 1/30/2026] Palominha God: name: Compilar Flix_ff iOS
 on: 
   push:
   workflow_dispatch:
@@ -18,6 +49,46 @@ jobs:
           # Baixa a biblioteca Substrate que está faltando
           curl -LO https://github.com/Dherton/mshook-ios/raw/master/substrate.h
           ls -la # Confirma se o substrate.h e o Flix_ff.mm estão aqui
+
+      - name: Compilador Dylib
+        run: |
+          clang -dynamiclib -arch arm64 \
+          -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+          -I. \
+          -o Flix_ff.dylib Flix_ff.mm \
+          -framework Foundation -framework UIKit \
+          -lobjc
+
+      - name: Salvar Arquivo Compilado
+        uses: actions/upload-artifact@v4
+        with:
+          name: Flix_ff_Dylib
+          path: Flix_ff.dylib
+[18:27, 1/30/2026] Palominha God: name: Compilar Flix_ff iOS
+on: 
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Localizar Script e Baixar Dependências
+        run: |
+          # Garante que o script está na raiz
+          find . -name "Flix_ff.mm" -exec cp {} . \;
+          
+          # Baixa o substrate.h de um servidor de arquivos raw (direto)
+          curl -L "https://raw.githubusercontent.com/theos/sdks/master/iPhoneOS14.5.sdk/usr/include/substrate.h" -o substrate.h
+          
+          # Verifica se o arquivo baixado é texto (HTML) ou código real
+          if grep -q "<!DOCTYPE html>" substrate.h; then
+            echo "Erro: O link baixou uma página HTML em vez do header. Tentando link alternativo..."
+            curl -L "https://gist.githubusercontent.com/tihmstar/7266948/raw/38600171607f9c8742517865f1285223c68383f9/substrate.h" -o substrate.h
+          fi
 
       - name: Compilador Dylib
         run: |
