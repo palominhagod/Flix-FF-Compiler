@@ -1,4 +1,4 @@
-[17:42, 1/30/2026] Palominha God: name: Compilar Flix_ff iOS
+name: Compilar Flix_ff iOS
 on: [push]
 jobs:
   build:
