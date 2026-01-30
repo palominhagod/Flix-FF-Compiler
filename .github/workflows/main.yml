@@ -1,0 +1,17 @@
+name: Compilar Flix_ff iOS
+on: [push]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Compilar Dylib
+        run: |
+          clang -dynamiclib -arch arm64 -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+          -o Flix_ff.dylib Flix_ff.mm \
+          -framework Foundation -framework UIKit -lsubstrate
+      - name: Upload da Dylib pronta
+        uses: actions/upload-artifact@v3
+        with:
+          name: Flix_ff_Dylib
+          path: Flix_ff.dylib
