@@ -1,4 +1,22 @@
-name: Compilar Flix_ff.mm. iOS
+[17:42, 1/30/2026] Palominha God: name: Compilar Flix_ff iOS
+on: [push]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Compilar Dylib
+        run: |
+          clang -dynamiclib -arch arm64 -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+          -o Flix_ff.dylib Flix_ff.mm \
+          -framework Foundation -framework UIKit -lsubstrate
+      - name: Upload da Dylib pronta
+        uses: actions/upload-artifact@v3
+        with:
+          name: Flix_ff_Dylib
+          path: Flix_ff.dylib
+[17:42, 1/30/2026] Palominha God: .github/workflows/main.yml
+[17:49, 1/30/2026] Palominha God: name: Compilar Flix_ff iOS
 on: 
   push:
   workflow_dispatch: # Ativa o botão manual
@@ -20,6 +38,38 @@ jobs:
 
       - name: Salvar Arquivo Compilado
         uses: actions/upload-artifact@v4 # Versão atualizada que corrige o erro
+        with:
+          name: Flix_ff_Dylib
+          path: Flix_ff.dylib
+[18:04, 1/30/2026] Palominha God: Flix_ff.mm.
+[18:19, 1/30/2026] Palominha God: name: Compilar Flix_ff iOS
+on: 
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Listar Arquivos (Debug)
+        run: ls -R # Isso vai nos mostrar no log onde o arquivo está de verdade
+
+      - name: Compilar Dylib
+        run: |
+          # Procura o arquivo Flix_ff.mm em qualquer lugar e traz para a raiz
+          find . -name "Flix_ff.mm" -exec cp {} . \;
+          
+          clang -dynamiclib -arch arm64 \
+          -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+          -o Flix_ff.dylib Flix_ff.mm \
+          -framework Foundation -framework UIKit \
+          -lobjc
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
         with:
           name: Flix_ff_Dylib
           path: Flix_ff.dylib
