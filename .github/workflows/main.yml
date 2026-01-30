@@ -1,4 +1,4 @@
-name: Compilar Flix_ff iOS
+ name: Compilar Flix_ff iOS
 on: 
   push:
   workflow_dispatch:
