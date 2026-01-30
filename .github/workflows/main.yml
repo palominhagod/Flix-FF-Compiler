@@ -10,16 +10,20 @@ jobs:
       - name: Checkout do Código
         uses: actions/checkout@v4
 
-      - name: Localizar e Preparar Script
+      - name: Localizar Script e Baixar Dependências
         run: |
-          # Procura o arquivo Flix_ff.mm e o move para a raiz, caso esteja em pasta errada
+          # Garante que o script está na raiz
           find . -name "Flix_ff.mm" -exec cp {} . \;
-          ls -la # Lista os arquivos para confirmar a presença do script
+          
+          # Baixa a biblioteca Substrate que está faltando
+          curl -LO https://github.com/Dherton/mshook-ios/raw/master/substrate.h
+          ls -la # Confirma se o substrate.h e o Flix_ff.mm estão aqui
 
       - name: Compilador Dylib
         run: |
           clang -dynamiclib -arch arm64 \
           -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+          -I. \
           -o Flix_ff.dylib Flix_ff.mm \
           -framework Foundation -framework UIKit \
           -lobjc
